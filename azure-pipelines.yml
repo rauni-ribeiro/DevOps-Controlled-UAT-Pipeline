@@ -14,8 +14,6 @@ parameters:
 
 pool:
   name: Self Hosted - Rauni's PC
-  demands:
-    -Agent.Name -equals RauniSelfHosted
 
 variables:
 - group: UAT-VARS
