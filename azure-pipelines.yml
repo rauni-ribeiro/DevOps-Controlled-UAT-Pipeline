@@ -13,7 +13,9 @@ parameters:
     - production
 
 pool:
-  vmImage: ubuntu-latest
+  name: Self Hosted - Rauni's PC
+  demands:
+    -Agent.Name -equals RauniSelfHosted
 
 variables:
 - group: UAT-VARS
