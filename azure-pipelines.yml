@@ -33,8 +33,8 @@ stages:
 
     - script: |
         python -m pip install --upgrade pip
-        python -m pip install -r requirements.txt
-      displayName: Install deps
+        python -m pip install pytest
+      displayName: Install pytest
 
     - script: |
         python -m pytest -q
@@ -43,6 +43,10 @@ stages:
         ENVIRONMENT: ${{ parameters.environment }}
         GREETING_TARGET: "$(GREETING_TARGET)"
         BUILD_BUILDID: "$(BUILD_BUILDID)"
+
+    - script: |
+        python -c "import os; os.makedirs('out', exist_ok=True)"
+      displayName: Ensure out/ exists
 
     - script: |
         python -m app.main
