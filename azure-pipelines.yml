@@ -1,5 +1,4 @@
-
-#disabling triggering from pushes - since this is uat - cd inclined
+# disabling triggering from pushes - since this is uat - cd inclined
 trigger: none
 
 parameters:
@@ -17,8 +16,6 @@ pool:
 
 variables:
 - group: UAT-VARS
-- name: PYTHON_VERSION
-  value: "3.11"
 
 stages:
 - stage: TestAndRun
@@ -29,17 +26,18 @@ stages:
     steps:
     - checkout: self
 
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: "$(PYTHON_VERSION)"
+    - script: |
+        python --version
+        python -m pip --version
+      displayName: Check Python
 
     - script: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        python -m pip install -r requirements.txt
       displayName: Install deps
 
     - script: |
-        pytest -q
+        python -m pytest -q
       displayName: Run tests
       env:
         ENVIRONMENT: ${{ parameters.environment }}
