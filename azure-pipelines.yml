@@ -1,0 +1,57 @@
+
+#disabling triggering from pushes - since this is uat - cd inclined test
+trigger: none
+
+parameters:
+- name: environment
+  displayName: Target environment
+  type: string
+  default: uat
+  values:
+    - dev
+    - uat
+    - production
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  PYTHON_VERSION: "3.11"
+
+stages:
+- stage: TestAndRun
+  displayName: Test + Run (${{ parameters.environment }})
+  jobs:
+  - job: Job
+    displayName: Unit tests and output artifact
+    steps:
+    - checkout: self
+
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: "$(PYTHON_VERSION)"
+
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      displayName: Install deps
+
+    - script: |
+        pytest -q
+      displayName: Run tests
+      env:
+        ENVIRONMENT: ${{ parameters.environment }}
+        GREETING_TARGET: "$(GREETING_TARGET)"
+        BUILD_BUILDID: "$(BUILD_BUILDID)"
+
+    - script: |
+        python -m app.main
+      displayName: Run app (creates out/message.txt)
+      env:
+        ENVIRONMENT: ${{ parameters.environment }}
+        GREETING_TARGET: "$(GREETING_TARGET)"
+        BUILD_BUILDID: "$(BUILD_BUILDID)"
+
+    - publish: out
+      artifact: demo-output
+      displayName: Publish artifact
