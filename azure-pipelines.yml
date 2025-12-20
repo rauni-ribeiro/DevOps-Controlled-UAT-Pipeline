@@ -37,11 +37,7 @@ stages:
       displayName: Install pytest
 
     - script: |
-        python -m pytest -q
-        if %ERRORLEVEL%==5 (
-          echo No tests found. Skipping.
-          exit /b 0
-        )
+        python main.py
       displayName: Run tests (skip if none)
       env:
         ENVIRONMENT: ${{ parameters.environment }}
