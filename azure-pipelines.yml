@@ -1,5 +1,5 @@
 
-#disabling triggering from pushes - since this is uat - cd inclined test
+#disabling triggering from pushes - since this is uat - cd inclined
 trigger: none
 
 parameters:
@@ -16,7 +16,9 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  PYTHON_VERSION: "3.11"
+- group: UAT-VARS
+- name: PYTHON_VERSION
+  value: "3.11"
 
 stages:
 - stage: TestAndRun
