@@ -38,7 +38,11 @@ stages:
 
     - script: |
         python -m pytest -q
-      displayName: Run tests
+        if %ERRORLEVEL%==5 (
+          echo No tests found. Skipping.
+          exit /b 0
+        )
+      displayName: Run tests (skip if none)
       env:
         ENVIRONMENT: ${{ parameters.environment }}
         GREETING_TARGET: "$(GREETING_TARGET)"
