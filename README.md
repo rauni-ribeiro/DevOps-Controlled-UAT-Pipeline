@@ -1,6 +1,6 @@
-# Azure DevOps – UAT Pipeline Demo
+# Azure DevOps – Controlled UAT CI/CD Pipeline
 
-This repository contains a **simple Azure DevOps pipeline** built to demonstrate core **CI/CD concepts** rather than application complexity.
+This repository contains an **environment-aware CI/CD pipeline** designed for **controlled UAT execution**, variable groups, artifact management, and **future IaC integration with Terraform**.
 
 The focus of this project is on **pipeline behavior, environment awareness, variable management, artifact generation, and troubleshooting**.
 
