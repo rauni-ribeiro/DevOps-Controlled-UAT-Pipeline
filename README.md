@@ -22,8 +22,11 @@ This mirrors a **controlled UAT execution flow** commonly used in real deploymen
 ## 🧱 Repository Structure
 
 .
+
 ├── azure-pipelines.yml
+
 ├── main.py
+
 └── README.md
 
 
