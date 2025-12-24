@@ -14,8 +14,13 @@ parameters:
 pool:
   name: Self Hosted - Rauni's PC
 
-variables:
-- group: UAT-VARS
+variables: # conditional variable groups based on environment
+- ${{ if eq(parameters.environment, 'dev') }}:
+  - group: DEV-VARS
+- ${{ if eq(parameters.environment, 'uat') }}:
+  - group: UAT-VARS
+- ${{ if eq(parameters.environment, 'production') }}:
+  - group: PROD-VARS
 
 stages:
 - stage: TestAndRun
@@ -48,11 +53,37 @@ stages:
         GREETING_TARGET: "$(GREETING_TARGET)"
         BUILD_BUILDID: "$(BUILD_BUILDID)"
 
+
+
+    # ---- TERRAFORM STEPS BY RAUNI RIBEIRO ---- #
+
+    - script: | # initializing terraform
+        terraform -version
+        terraform init -input=false
+      displayName: Terraform init
+      workingDirectory: infra
+
+    - script: | # planning terraform infra changes
+        terraform  plan -var-file="../.tfvars/${{ parameters.environment }}.tfvars" -input=false
+      displayName: Terraform plan
+      workingDirectory: infra
+
+    - script: | # applying terraform infra changes
+        terraform apply -auto-approve -var-file="../.tfvars/${{ parameters.environment }}.tfvars" -input=false
+      displayName: Terraform apply
+      workingDirectory: infra
+      condition: and(succeeded(), eq('${{ parameters.environment }}', 'uat')) # only apply in UAT lock
+
+    - script: | # outputting terraform extracted values
+        terraform output
+      workingDirectory: infra
+      displayName: Terraform output
+
     - script: |
         python -c "import os; os.makedirs('out', exist_ok=True)"
       displayName: Ensure out/ exists
 
-    - script: |
+    - script: | # creating output artifact
         python main.py
       displayName: Run app (creates out/message.txt)
       env:
