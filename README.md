@@ -1,36 +1,50 @@
-# Azure DevOps – Controlled UAT CI/CD Pipeline
+# Azure DevOps – Controlled UAT CI/CD Pipeline with Terraform
 
-This repository contains an **environment-aware CI/CD pipeline** designed for **controlled UAT execution**, variable groups, artifact management, and **future IaC integration with Terraform**.
+This repository contains an **environment-aware CI/CD pipeline** designed for **controlled UAT execution**, **variable groups**, **artifact management**, and **infrastructure provisioning using Terraform**.
 
-The focus of this project is on **pipeline behavior, environment awareness, variable management, artifact generation, and troubleshooting**.
+The focus of this project is on **pipeline behavior, environment awareness, compile-time vs runtime variables, artifact generation, infrastructure provisioning, and troubleshooting**.
 
--------
+---
 
 ## 📌 What This Project Does
 
-The pipeline runs a Python script that:
+This project combines **application execution** and **infrastructure provisioning** in a single controlled pipeline.
 
+The pipeline:
+
+### Application layer
 - Reads environment variables injected by Azure DevOps
 - Executes only when the target environment is `UAT`
 - Generates a message containing build metadata
 - Produces and publishes a build artifact (`message.txt`)
 
-This mirrors a **controlled UAT execution flow** commonly used in real deployment pipelines.
+### Infrastructure layer (Terraform)
+- Initializes Terraform from a dedicated `infra/` directory
+- Plans infrastructure changes using environment-specific `.tfvars`
+- Applies infrastructure **only when the environment is UAT**
+- Exposes Terraform outputs for validation and future integration
 
--------
+This mirrors a **real-world controlled UAT execution and provisioning flow** used in CI/CD pipelines.
+
+---
 
 ## 🧱 Repository Structure
 
 .
-
 ├── azure-pipelines.yml
-
 ├── main.py
+├── README.md
+├── infra/
+│ ├── main.tf
+│ ├── variables.tf
+│ └── outputs.tf
+└── .tfvars/
+├── dev.tfvars
+├── uat.tfvars
+└── production.tfvars
 
-└── README.md
 
-
--------
+---
 
 ## 🐍 Application Logic
 
@@ -42,63 +56,87 @@ It:
 - Writes a message to `out/message.txt`
 - Acts as a real artifact producer for the pipeline
 
--------
+---
 
 ## 🔁 Azure DevOps Pipeline
 
 Pipeline highlights:
 
-- Manual trigger (UAT-focused)
-- Parameter-based environment selection
-- Self-hosted agent
-- Variable Group integration
+- Manual trigger with parameter-based environment selection
+- Compile-time environment definition via pipeline parameters
+- Runtime variable injection via Variable Groups
+- Self-hosted agent execution
 - Graceful handling of missing tests
+- Terraform init / plan / apply workflow
+- Conditional Terraform apply (UAT-only safeguard)
 - Artifact publishing
 
-The pipeline validates runtime configuration, executes the application logic, and publishes the output as an artifact.
+The pipeline enforces a **clear separation between compile-time structure and runtime execution**, following DevOps best practices.
 
--------
+---
 
-## 🔐 Variable Groups
+## 🔐 Variable Groups & Environment Control
 
-Environment-specific values are injected via an Azure DevOps **Variable Group**, keeping configuration separate from pipeline logic and enabling safe, reusable environment setups.
+- `ENVIRONMENT` is defined at **compile-time** via pipeline parameters
+- Sensitive or environment-specific values (e.g. `GREETING_TARGET`) are injected at **runtime** via Azure DevOps Variable Groups
+- Built-in pipeline variables (e.g. `BUILD_BUILDID`) are consumed directly at runtime
 
--------
+This approach improves **security, clarity, and reusability** across environments.
+
+---
+
+## 🧱 Terraform Infrastructure
+
+Terraform follows a clean and modular structure:
+
+- Resource definitions in `infra/main.tf`
+- Variable declarations in `infra/variables.tf`
+- Environment-specific values in `.tfvars/*`
+- Outputs exposed via `infra/outputs.tf`
+
+Infrastructure is:
+- **Planned** for all environments
+- **Applied only in UAT**, preventing accidental changes in production-like environments
+
+---
 
 ## 📦 Build Artifact
 
 The pipeline generates and publishes:
-### out/message.txt --> "[uat] - Hello Rauni Ribeiro, your current build is 8".
 
+### out/message.txt  --> Example content: "[uat] - Hello Rauni Ribeiro - From DevOps Pipeline Var, your current build is 8"
 
-This confirms correct variable injection and runtime execution.
+This confirms correct variable injection, runtime execution, and artifact lifecycle handling.
 
--------
+---
 
 ## 🚀 Future Improvements
 
 Planned next steps include:
 
-- Infrastructure provisioning using **Terraform**
-- Environment-specific infrastructure (UAT / PROD)
-- Multi-stage pipelines (infra → application)
-- Artifact deployment to cloud resources
+- Remote Terraform state backend (Azure)
+- Multi-stage pipelines (plan → approval → apply)
+- Promotion flow (UAT → Production)
+- Consuming Terraform outputs in application steps
+- Deploying artifacts to provisioned cloud resources
 
 These improvements will evolve the project into a **full CI/CD + IaC workflow**.
 
--------
+---
 
 ## 🏁 Summary
 
-This project demonstrates **practical DevOps fundamentals**:
-- CI/CD pipelines
-- Environment-based execution
-- Variable management
-- Artifact lifecycle
+This project demonstrates **practical, real-world DevOps fundamentals**:
+
+- CI/CD pipeline design
+- Compile-time vs runtime separation
+- Environment-aware execution
+- Variable group usage
+- Terraform-based infrastructure provisioning
+- Artifact lifecycle management
 - Debugging and troubleshooting mindset
 
-The goal is clarity and correctness, with a clear path for future expansion.
-
+The goal is **clarity, safety, and scalability**, with a solid foundation for future expansion.
 
 
 
