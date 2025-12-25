@@ -48,7 +48,7 @@ This repository is organized to clearly separate **application code**, **infrast
     ├── uat.tfvars           # UAT (User Acceptance Testing) values
     └── production.tfvars    # Production environment values
 
-
+```
 
 ---
 
