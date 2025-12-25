@@ -30,18 +30,24 @@ This mirrors a **real-world controlled UAT execution and provisioning flow** use
 
 ## 🧱 Repository Structure
 
+This repository is organized to clearly separate **application code**, **infrastructure as code**, and **environment-specific configurations**, following real-world DevOps best practices.
+
+```text
 .
-├── azure-pipelines.yml
-├── main.py
-├── README.md
-├── infra/
-│ ├── main.tf
-│ ├── variables.tf
-│ └── outputs.tf
-└── .tfvars/
-├── dev.tfvars
-├── uat.tfvars
-└── production.tfvars
+├── azure-pipelines.yml      # Azure DevOps CI/CD pipeline definition
+├── main.py                  # Application entry point
+├── README.md                # Project documentation
+│
+├── infra/                   # Terraform infrastructure code
+│   ├── main.tf              # Core infrastructure resources
+│   ├── variables.tf         # Input variable definitions
+│   └── outputs.tf           # Exported infrastructure outputs
+│
+└── .tfvars/                 # Environment-specific Terraform variables
+    ├── dev.tfvars           # Development environment values
+    ├── uat.tfvars           # UAT (User Acceptance Testing) values
+    └── production.tfvars    # Production environment values
+
 
 
 ---
