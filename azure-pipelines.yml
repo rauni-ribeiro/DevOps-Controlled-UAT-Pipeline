@@ -54,6 +54,17 @@ stages:
         BUILD_BUILDID: "$(BUILD_BUILDID)"
 
 
+    # ---- AZURE AUTH STEPS BY RAUNI RIBEIRO ---- #
+
+    - task: AzureCLI@2
+      displayName: 'Azure CLI login'
+      inputs:
+        azureSubscription: 'sc-azure-terraform-uat' # service connection name
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az account show
+
 
     # ---- TERRAFORM STEPS BY RAUNI RIBEIRO ---- #
 
@@ -72,8 +83,7 @@ stages:
         terraform apply -auto-approve -var-file="../.tfvars/${{ parameters.environment }}.tfvars" -input=false
       displayName: Terraform apply
       workingDirectory: infra
-      condition: and(succeeded(), eq('${{ parameters.environment }}', 'uat')) # only apply in UAT lock
-
+      condition: and(succeeded(), eq('${{ parameters.environment }}', 'uat')) # applies only allowed in UAT - LOCKED
     - script: | # outputting terraform extracted values
         terraform output
       workingDirectory: infra
