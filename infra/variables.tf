@@ -20,3 +20,8 @@ variable "container_name" {
 variable "storage_account_name" {
     type = string
 }
+
+variable "blob_name" {
+    type = string
+    default = "artifact"
+}
